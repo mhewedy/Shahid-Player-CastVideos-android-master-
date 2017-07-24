@@ -170,7 +170,7 @@ public class LocalPlayerActivity extends AppCompatActivity {
             final String seriesId = uri.getQueryParameter("seriesId");
 
             mSelectedMedia = buildMediaInfo(getTitle(title, episode), "", "", Integer.parseInt(durationSeconds),
-                    videoUrl, getType(videoUrl), posterUrl, "", null);
+                    videoUrl, getType(videoUrl), posterUrl, "", null, laUrl);
             setupActionBar();
             boolean shouldStartPlayback = true;
             int startPosition = 0;
@@ -230,7 +230,7 @@ public class LocalPlayerActivity extends AppCompatActivity {
 
     private static MediaInfo buildMediaInfo(String title, String studio, String subTitle,
                                             int duration, String url, String mimeType, String imgUrl, String bigImageUrl,
-                                            List<MediaTrack> tracks) {
+                                            List<MediaTrack> tracks, String laUrl) {
         MediaMetadata movieMetadata = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
 
         movieMetadata.putString(MediaMetadata.KEY_SUBTITLE, studio);
@@ -240,7 +240,9 @@ public class LocalPlayerActivity extends AppCompatActivity {
         JSONObject jsonObj = null;
         try {
             jsonObj = new JSONObject();
-            jsonObj.put("description", subTitle);
+            if (laUrl != null && !"".equals(laUrl.trim())){
+                jsonObj.put("laUrl", laUrl);
+            }
         } catch (JSONException e) {
             Log.e(TAG, "Failed to add description to the json object", e);
         }
