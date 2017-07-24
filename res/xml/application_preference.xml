@@ -38,13 +38,4 @@
             android:title="@string/version" />
     </PreferenceCategory>
 
-    <PreferenceCategory
-        android:title="@string/serverIp" >
-        <EditTextPreference
-            android:key="serverIp"
-            android:title="@string/serverIp" />
-    </PreferenceCategory>
-
-
-
 </PreferenceScreen>

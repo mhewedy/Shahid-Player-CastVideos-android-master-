@@ -18,7 +18,6 @@ package com.google.sample.cast.refplayer.mediaplayer;
 
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaMetadata;
-import com.google.android.gms.cast.MediaQueueItem;
 import com.google.android.gms.cast.MediaTrack;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
@@ -28,9 +27,7 @@ import com.google.android.gms.cast.framework.media.MediaUtils;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import com.google.android.gms.common.images.WebImage;
 import com.google.sample.cast.refplayer.R;
-import com.google.sample.cast.refplayer.browser.VideoProvider;
 import com.google.sample.cast.refplayer.expandedcontrols.ExpandedControlsActivity;
-import com.google.sample.cast.refplayer.queue.QueueDataProvider;
 import com.google.sample.cast.refplayer.queue.ui.QueueListViewActivity;
 import com.google.sample.cast.refplayer.settings.CastPreference;
 import com.google.sample.cast.refplayer.utils.Utils;
@@ -160,7 +157,7 @@ public class LocalPlayerActivity extends AppCompatActivity {
             String laUrl = "";
             try {
                 laUrl = uri.getQueryParameter("laUrl");
-                if (laUrl != null){
+                if (laUrl != null) {
                     laUrl = URLDecoder.decode(uri.getQueryParameter("laUrl"), "utf8");
                 }
             } catch (UnsupportedEncodingException e) {
@@ -214,19 +211,19 @@ public class LocalPlayerActivity extends AppCompatActivity {
         }
     }
 
-    private static String getTitle(String title, String episode){
-        if (episode != null && !"".equals(episode.trim())){
+    private static String getTitle(String title, String episode) {
+        if (episode != null && !"".equals(episode.trim())) {
             title += " الحلقة رقم " + episode;
         }
         return title;
     }
 
-    private static String getType(String videoUrl){
-        if (videoUrl.endsWith("m3u8")){
+    private static String getType(String videoUrl) {
+        if (videoUrl.endsWith("m3u8")) {
             return "application/x-mpegurl";
-        }else if (videoUrl.endsWith("mpd")){
+        } else if (videoUrl.endsWith("mpd")) {
             return "application/dash+xml";
-        }else {
+        } else {
             return "";
         }
     }
@@ -689,7 +686,7 @@ public class LocalPlayerActivity extends AppCompatActivity {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress,
-                    boolean fromUser) {
+                                          boolean fromUser) {
                 mStartText.setText(Utils.formatMillis(progress));
             }
         });
@@ -791,8 +788,7 @@ public class LocalPlayerActivity extends AppCompatActivity {
             mVideoView.invalidate();
         } else {
             MediaMetadata mm = mSelectedMedia.getMetadata();
-            mDescriptionView.setText(mSelectedMedia.getCustomData().optString(
-                    VideoProvider.KEY_DESCRIPTION));
+            mDescriptionView.setText(mSelectedMedia.getCustomData().optString("description"));
             mTitleView.setText(mm.getString(MediaMetadata.KEY_TITLE));
             mAuthorView.setText(mm.getString(MediaMetadata.KEY_SUBTITLE));
             mDescriptionView.setVisibility(View.VISIBLE);
