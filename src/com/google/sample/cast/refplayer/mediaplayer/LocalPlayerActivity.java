@@ -158,7 +158,7 @@ public class LocalPlayerActivity extends AppCompatActivity {
             try {
                 laUrl = uri.getQueryParameter("laUrl");
                 if (laUrl != null) {
-                    laUrl = URLDecoder.decode(uri.getQueryParameter("laUrl"), "utf8");
+                    laUrl = URLDecoder.decode(laUrl, "utf8");
                 }
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -168,6 +168,18 @@ public class LocalPlayerActivity extends AppCompatActivity {
             final String episode = uri.getQueryParameter("episode");
             final String posterUrl = uri.getQueryParameter("posterUrl");
             final String seriesId = uri.getQueryParameter("seriesId");
+
+            String tags = "";
+            try {
+                tags = uri.getQueryParameter("tags");
+                if (tags != null) {
+                    tags = URLDecoder.decode(tags, "utf8");
+                    this.mDescriptionView.setText(tags.replaceAll("\\،", ", "));
+                    Log.i(TAG, "TAGS" +  tags);
+                }
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
 
             mSelectedMedia = buildMediaInfo(getTitle(title, episode), "", "", Integer.parseInt(durationSeconds),
                     videoUrl, getType(videoUrl), posterUrl, "", null, laUrl);
@@ -778,7 +790,7 @@ public class LocalPlayerActivity extends AppCompatActivity {
     private void updateMetadata(boolean visible) {
         Point displaySize;
         if (!visible) {
-            mDescriptionView.setVisibility(View.GONE);
+//            mDescriptionView.setVisibility(View.GONE);
             mTitleView.setVisibility(View.GONE);
             mAuthorView.setVisibility(View.GONE);
             displaySize = Utils.getDisplaySize(this);
@@ -790,10 +802,10 @@ public class LocalPlayerActivity extends AppCompatActivity {
             mVideoView.invalidate();
         } else {
             MediaMetadata mm = mSelectedMedia.getMetadata();
-            mDescriptionView.setText(mSelectedMedia.getCustomData().optString("description"));
+//            mDescriptionView.setText(mSelectedMedia.getCustomData().optString("description"));
             mTitleView.setText(mm.getString(MediaMetadata.KEY_TITLE));
             mAuthorView.setText(mm.getString(MediaMetadata.KEY_SUBTITLE));
-            mDescriptionView.setVisibility(View.VISIBLE);
+//            mDescriptionView.setVisibility(View.VISIBLE);
             mTitleView.setVisibility(View.VISIBLE);
             mAuthorView.setVisibility(View.VISIBLE);
             displaySize = Utils.getDisplaySize(this);
