@@ -117,6 +117,8 @@ public class LocalPlayerActivity extends AppCompatActivity {
     private CastSession mCastSession;
     private SessionManagerListener<CastSession> mSessionManagerListener;
     private MenuItem mQueueMenuItem;
+
+    private int mStartPositionsMs;
     /**
      * indicates whether we are doing a local or a remote playback
      */
@@ -200,9 +202,9 @@ public class LocalPlayerActivity extends AppCompatActivity {
                     updatePlaybackLocation(PlaybackLocation.LOCAL);
                 }
                 updatePlayButton(mPlaybackState);
-                int startPositionsMs = startPositionSeconds * 1000;
-                mVideoView.seekTo(startPositionsMs);
-                Log.d(TAG, "start position in ms " + startPositionsMs);
+                mStartPositionsMs = startPositionSeconds * 1000;
+                mVideoView.seekTo(mStartPositionsMs);
+                Log.d(TAG, "start position in ms " + mStartPositionsMs);
                 mVideoView.start();
 
                 startControllersTimer();
@@ -414,7 +416,7 @@ public class LocalPlayerActivity extends AppCompatActivity {
                         updatePlaybackLocation(PlaybackLocation.LOCAL);
                         break;
                     case REMOTE:
-                        loadRemoteMedia(0, true);
+                        loadRemoteMedia(mStartPositionsMs, true);
                         finish();
                         break;
                     default:
