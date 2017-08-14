@@ -117,7 +117,6 @@ public class LocalPlayerActivity extends AppCompatActivity {
     private CastSession mCastSession;
     private SessionManagerListener<CastSession> mSessionManagerListener;
     private MenuItem mQueueMenuItem;
-
     /**
      * indicates whether we are doing a local or a remote playback
      */
@@ -164,10 +163,12 @@ public class LocalPlayerActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             System.out.println(laUrl);
-            String durationSeconds = uri.getQueryParameter("durationSeconds");
+            int durationSeconds = Utils.getQueryParameter(uri, "durationSeconds", 0);
             final String episode = uri.getQueryParameter("episode");
             final String posterUrl = uri.getQueryParameter("posterUrl");
             final String seriesId = uri.getQueryParameter("seriesId");
+            int startPositionSeconds = Utils.getQueryParameter(uri, "startPosition", 0);
+            int endPositionSeconds = Utils.getQueryParameter(uri, "endPosition", 0);
 
             String tags = "";
             try {
@@ -175,17 +176,17 @@ public class LocalPlayerActivity extends AppCompatActivity {
                 if (tags != null) {
                     tags = URLDecoder.decode(tags, "utf8");
                     this.mDescriptionView.setText(tags.replaceAll("\\،", ", "));
-                    Log.i(TAG, "TAGS" +  tags);
+                    Log.i(TAG, "TAGS" + tags);
                 }
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
 
-            mSelectedMedia = buildMediaInfo(getTitle(title, episode), "", "", Integer.parseInt(durationSeconds),
+            mSelectedMedia = buildMediaInfo(getTitle(title, episode), "", "", durationSeconds,
                     videoUrl, getType(videoUrl), posterUrl, "", null, laUrl);
             setupActionBar();
             boolean shouldStartPlayback = true;
-            int startPosition = 0;
+
             mVideoView.setVideoURI(Uri.parse(mSelectedMedia.getContentId()));
             Log.d(TAG, "Setting url of the VideoView to: " + mSelectedMedia.getContentId());
             if (shouldStartPlayback) {
@@ -199,9 +200,9 @@ public class LocalPlayerActivity extends AppCompatActivity {
                     updatePlaybackLocation(PlaybackLocation.LOCAL);
                 }
                 updatePlayButton(mPlaybackState);
-                if (startPosition > 0) {
-                    mVideoView.seekTo(startPosition);
-                }
+                int startPositionsMs = startPositionSeconds * 1000;
+                mVideoView.seekTo(startPositionsMs);
+                Log.d(TAG, "start position in ms " + startPositionsMs);
                 mVideoView.start();
 
                 startControllersTimer();
@@ -216,7 +217,29 @@ public class LocalPlayerActivity extends AppCompatActivity {
                 mPlaybackState = PlaybackState.IDLE;
                 updatePlayButton(mPlaybackState);
             }
+
+            if (endPositionSeconds > 0 ){
+                final int stopAtMs = (durationSeconds - endPositionSeconds) * 1000;
+                Log.d(TAG, "stop at position in ms " + stopAtMs);
+
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        int currentPositionMs = mVideoView.getCurrentPosition();
+//                    Log.d(TAG, ">> checking the stop timer, current: " + currentPositionMs/1000 + " seconds, stopAt: " + stopAtMs/1000 + " seconds");
+
+                        if (currentPositionMs >= stopAtMs) {
+                            mVideoView.pause();
+                            mHandler.removeCallbacks(this);
+                        }else{
+                            mHandler.postDelayed(this, 2000);
+                        }
+                    }
+                }, 2000);
+            }
         }
+
+
 
         if (mTitleView != null) {
             updateMetadata(true);
@@ -252,7 +275,7 @@ public class LocalPlayerActivity extends AppCompatActivity {
         JSONObject jsonObj = null;
         try {
             jsonObj = new JSONObject();
-            if (laUrl != null && !"".equals(laUrl.trim())){
+            if (laUrl != null && !"".equals(laUrl.trim())) {
                 jsonObj.put("laUrl", laUrl);
             }
         } catch (JSONException e) {

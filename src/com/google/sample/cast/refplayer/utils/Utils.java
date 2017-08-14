@@ -33,6 +33,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.res.Configuration;
 import android.graphics.Point;
+import android.net.Uri;
 import android.support.v7.widget.PopupMenu;
 import android.text.TextUtils;
 import android.util.Log;
@@ -264,5 +265,19 @@ public class Utils {
 
     public static MediaQueueItem rebuildQueueItem(MediaQueueItem item) {
         return new MediaQueueItem.Builder(item).clearItemId().build();
+    }
+
+    public static int getQueryParameter(Uri uri, String paramName, int defaultValue){
+        Log.d(TAG, uri.toString());
+        String paramValue = uri.getQueryParameter(paramName);
+        if (paramValue != null && !paramValue.trim().isEmpty()){
+            try{
+                return Integer.parseInt(paramValue);
+            }catch (NumberFormatException ex){
+                return defaultValue;
+            }
+        }else{
+            return defaultValue;
+        }
     }
 }
